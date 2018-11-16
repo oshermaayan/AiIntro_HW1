@@ -74,4 +74,4 @@ class MapProblem(GraphProblem):
 
         # TODO: modify the returned value to indicate whether `state` is a final state.
         # You may use the problem's input parameters (stored as fields of this object by the constructor).
-        return state.junction_id == self.target_junction_id #14593
+        return state.junction_id == self.target_junction_id

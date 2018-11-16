@@ -46,8 +46,9 @@ class AStar(BestFirstSearch):
         Remember: In Weighted-A* the f-score is defined by ((1-w) * cost) + (w * h(state)).
         Notice: You may use `search_node.cost`, `self.heuristic_weight`, and `self.heuristic_function`.
         """
+        assert (search_node.cost is not None)
         g_val = search_node.cost
-        h_val = self.heuristic_function.estimate(self.)
+        h_val = self.heuristic_function.estimate(search_node)
         return (1-self.heuristic_weight)*g_val + self.heuristic_weight*h_val
 
     def _open_successor_node(self, problem: GraphProblem, successor_node: SearchNode):
@@ -67,6 +68,22 @@ class AStar(BestFirstSearch):
         Remember: In A*, in contrast to uniform-cost, a successor state might have an already closed node,
                   but still could be improved.
         """
+        #if self.close.has_state(successor_node.state):
+        #    return
 
-        #raise NotImplemented()  # TODO: remove!
+        if self.open.has_state(successor_node.state):
+            already_found_node_with_same_state = self.open.get_node_by_state(successor_node.state)
+            if already_found_node_with_same_state.expanding_priority > successor_node.expanding_priority:
+                self.open.extract_node(already_found_node_with_same_state) # remove older node from OPEN
+                self.open.push_node(successor_node) # Add new node with better cost top OPEN
+
+        elif self.close.has_state(successor_node.state):
+            already_found_node_with_same_state = self.close.get_node_by_state(successor_node.state)
+            if already_found_node_with_same_state.expanding_priority > successor_node.expanding_priority:
+                self.close.extract_node(already_found_node_with_same_state)  # remove older node from CLOSE
+                self.open.push_node(successor_node)  # Add new node with better cost to OPEN
+
+        else: #state hasn't been developed yet - add it to OPEN
+            #TODO remove this line  ####(not self.open.has_state(successor_node.state) and not not self.open.has_state(successor_node.state))
+            self.open.push_node(successor_node)
 
