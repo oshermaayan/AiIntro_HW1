@@ -24,6 +24,7 @@ class AirDistHeuristic(HeuristicFunction):
         junction = self.problem.roads[state.junction_id]
         target_id = self.problem.target_junction_id
         target_node = self.problem.roads[target_id]
+        air_dist = junction.calc_air_distance_from(target_node)
 
-        return junction.calc_air_distance_from(target_node)
+        return air_dist
 
