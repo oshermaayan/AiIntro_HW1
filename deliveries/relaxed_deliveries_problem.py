@@ -35,25 +35,26 @@ class RelaxedDeliveriesState(GraphProblemState):
     def __eq__(self, other):
         """
         This method is used to determine whether two given state objects represents the same state.
-
-        TODO: implement this method!
         Notice: Never compare floats using `==` operator! Use `fuel_as_int` instead of `fuel`.
         """
-        raise NotImplemented()  # TODO: remove!
+        assert isinstance(other, RelaxedDeliveriesState)
+        location_equal = self.current_location.__eq__(other.current_location)
+        drop_off_equal = (self.dropped_so_far.intersection(other.dropped_so_far)== self.dropped_so_far)
+        fuel_equal = self.fuel_as_int() == other.fuel_as_int()
+        return location_equal and drop_off_equal and fuel_equal
+
 
     def __hash__(self):
         """
         This method is used to create a hash of a state.
         It is critical that two objects representing the same state would have the same hash!
-
-        TODO: implement this method!
         A common implementation might be something in the format of:
         >>> return hash((self.some_field1, self.some_field2, self.some_field3))
         Notice: Do NOT give float fields to `hash(...)`.
                 Otherwise the upper requirement would not met.
                 In our case, use `fuel_as_int`.
         """
-        raise NotImplemented()  # TODO: remove!
+        return hash((self.current_location, self.dropped_so_far, self.fuel_as_int()))
 
     def __str__(self):
         """
@@ -83,7 +84,6 @@ class RelaxedDeliveriesProblem(GraphProblem):
 
     def expand_state_with_costs(self, state_to_expand: GraphProblemState) -> Iterator[Tuple[GraphProblemState, float]]:
         """
-        TODO: implement this method!
         This method represents the `Succ: S -> P(S)` function of the relaxed deliveries problem.
         The `Succ` function is defined by the problem operators as shown in class.
         The relaxed problem operators are defined in the assignment instructions.
@@ -93,16 +93,36 @@ class RelaxedDeliveriesProblem(GraphProblem):
         """
         assert isinstance(state_to_expand, RelaxedDeliveriesState)
 
-        raise NotImplemented()  # TODO: remove!
+        for successor_state_junction in self.possible_stop_points:
+            distance = state_to_expand.current_location.calc_air_distance_from(successor_state_junction)
+            successor_state_fuel = state_to_expand.fuel - distance
+
+            if successor_state_fuel < 0:
+                # There is not enough fuel to reach the successor state - do nothing
+                yield
+
+            # Check the kind of state
+            if successor_state_junction in self.drop_points:
+                successor_state_dropped_points = state_to_expand.dropped_so_far.union(state_to_expand.current_location)
+
+            else:
+                # Junction is a gas station
+                successor_state_fuel = self.gas_tank_capacity
+                successor_state_dropped_points = state_to_expand.dropped_so_far
+
+            successor_state = RelaxedDeliveriesState(successor_state_junction, successor_state_dropped_points,
+                                                    successor_state_fuel)
+            yield successor_state, distance
+            ### Verify that we do/don't need to return a cost, e.g. successor_state, distance
+
 
     def is_goal(self, state: GraphProblemState) -> bool:
         """
         This method receives a state and returns whether this state is a goal.
-        TODO: implement this method!
         """
         assert isinstance(state, RelaxedDeliveriesState)
-
-        raise NotImplemented()  # TODO: remove!
+        # Have all the ordered been delivered?
+        return state.dropped_so_far == self.drop_points
 
     def solution_additional_str(self, result: 'SearchResult') -> str:
         """This method is used to enhance the printing method of a found solution."""
