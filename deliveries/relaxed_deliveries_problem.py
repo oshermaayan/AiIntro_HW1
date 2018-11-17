@@ -107,7 +107,7 @@ class RelaxedDeliveriesProblem(GraphProblem):
 
             # Check the kind of state
             if successor_state_junction in self.drop_points:
-                successor_state_dropped_points = state_to_expand.dropped_so_far.union(set([state_to_expand.current_location]))
+                successor_state_dropped_points = state_to_expand.dropped_so_far.union(set([successor_state_junction]))
 
             else:
                 # Junction is a gas station
