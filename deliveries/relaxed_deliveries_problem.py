@@ -39,8 +39,8 @@ class RelaxedDeliveriesState(GraphProblemState):
         """
         assert isinstance(other, RelaxedDeliveriesState)
         location_equal = self.current_location.__eq__(other.current_location)
-        drop_off_equal = (self.dropped_so_far.intersection(other.dropped_so_far)== self.dropped_so_far)
-        fuel_equal = self.fuel_as_int() == other.fuel_as_int()
+        drop_off_equal = (self.dropped_so_far.intersection(other.dropped_so_far) == self.dropped_so_far)
+        fuel_equal = self.fuel_as_int == other.fuel_as_int
         return location_equal and drop_off_equal and fuel_equal
 
 
@@ -54,7 +54,7 @@ class RelaxedDeliveriesState(GraphProblemState):
                 Otherwise the upper requirement would not met.
                 In our case, use `fuel_as_int`.
         """
-        return hash((self.current_location, self.dropped_so_far, self.fuel_as_int()))
+        return hash((self.current_location, self.dropped_so_far, self.fuel_as_int))
 
     def __str__(self):
         """
@@ -94,16 +94,20 @@ class RelaxedDeliveriesProblem(GraphProblem):
         assert isinstance(state_to_expand, RelaxedDeliveriesState)
 
         for successor_state_junction in self.possible_stop_points:
+            if successor_state_junction==state_to_expand.current_location:
+                # Don't expand your current location
+                continue
+
             distance = state_to_expand.current_location.calc_air_distance_from(successor_state_junction)
             successor_state_fuel = state_to_expand.fuel - distance
 
-            if successor_state_fuel < 0:
+            if successor_state_fuel < 0.0:
                 # There is not enough fuel to reach the successor state - do nothing
-                yield
+                continue
 
             # Check the kind of state
             if successor_state_junction in self.drop_points:
-                successor_state_dropped_points = state_to_expand.dropped_so_far.union(state_to_expand.current_location)
+                successor_state_dropped_points = state_to_expand.dropped_so_far.union(set([state_to_expand.current_location]))
 
             else:
                 # Junction is a gas station
@@ -122,6 +126,7 @@ class RelaxedDeliveriesProblem(GraphProblem):
         """
         assert isinstance(state, RelaxedDeliveriesState)
         # Have all the ordered been delivered?
+        ###print("Delivered: " +str(len(state.dropped_so_far)))
         return state.dropped_so_far == self.drop_points
 
     def solution_additional_str(self, result: 'SearchResult') -> str:
