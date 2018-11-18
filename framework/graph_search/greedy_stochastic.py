@@ -21,19 +21,30 @@ class GreedyStochastic(BestFirstSearch):
         self.heuristic_function = self.heuristic_function_type(problem)
 
     def _open_successor_node(self, problem: GraphProblem, successor_node: SearchNode):
-        """
-        TODO: implement this method!
-        """
 
-        raise NotImplemented()  # TODO: remove!
+        if self.open.has_state(successor_node.state):
+            already_found_node_with_same_state = self.open.get_node_by_state(successor_node.state)
+            if already_found_node_with_same_state.expanding_priority > successor_node.expanding_priority:
+                self.open.extract_node(already_found_node_with_same_state) # remove older node from OPEN
+                self.open.push_node(successor_node) # Add new node with better cost top OPEN
+
+        elif self.close.has_state(successor_node.state):
+            already_found_node_with_same_state = self.close.get_node_by_state(successor_node.state)
+            if already_found_node_with_same_state.expanding_priority > successor_node.expanding_priority:
+                self.close.remove_node(already_found_node_with_same_state)  # remove older node from CLOSE
+                self.open.push_node(successor_node)  # Add new node with better cost to OPEN
+
+        else: #state hasn't been developed yet - add it to OPEN
+            self.open.push_node(successor_node)
+
 
     def _calc_node_expanding_priority(self, search_node: SearchNode) -> float:
         """
-        TODO: implement this method!
         Remember: `GreedyStochastic` is greedy.
         """
+        h_val = self.heuristic_function.estimate(search_node.state)
+        return h_val
 
-        raise NotImplemented()  # TODO: remove!
 
     def _extract_next_search_node_to_expand(self) -> Optional[SearchNode]:
         """
@@ -50,5 +61,52 @@ class GreedyStochastic(BestFirstSearch):
                 of these popped items. The other items have to be
                 pushed again into that queue.
         """
+        if self.open.is_empty():
+            return None
 
-        raise NotImplemented()  # TODO: remove!
+        num_nodes_to_expand = min(self.N, len(self.open))
+        nodes_to_expand = []
+        nodes_vals = []
+        for i in range(num_nodes_to_expand):
+            node = self.open.pop_next_node()
+            nodes_to_expand.append(node)
+            node_val = self._calc_node_expanding_priority(node)
+            if node_val < 0.001:
+                node_val = 1.0
+            ### Check our conditions in this function, and understand what to chang if node_val == 0
+            nodes_vals.append(node_val)
+
+        nodes_vals = np.array(nodes_vals)
+        #nodes_vals = np.array(list(map(lambda x: self._calc_node_expanding_priority(x), nodes_to_expand)))
+
+        min_val = np.amin(np.array(nodes_vals))
+        ### Should we even consider this case, or just return the node ?
+        #if min_val < 0.0001:
+           # min_val = 1.0
+
+        print(min_val)
+        # Probabilities array
+        prob_arr = np.zeros(len(nodes_to_expand))
+
+        exp = -1 / self.T
+        squared = np.array(list(map(lambda x: (x / min_val) ** exp, nodes_vals)))
+        squared_sum = np.sum(squared)
+
+       # if squared_sum < 0.0001:
+            #squared_sum = len(nodes_to_expand)
+
+        for i in range(len(nodes_to_expand)):
+            print(min_val)
+            top = (float(nodes_vals[i]) / float(min_val)) ** exp
+            prob_arr[i] = (float(top) / squared_sum)
+
+        chosen_node = np.random.choice(nodes_to_expand,size=1,p=prob_arr)[0]
+
+        #Push other nodes back to Open
+        for node in nodes_to_expand:
+            if node!=chosen_node:
+                self.open.push_node(node)
+
+        # Update T
+        self.T = self.T * self.T_scale_factor
+        return chosen_node
