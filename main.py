@@ -28,8 +28,6 @@ def plot_distance_and_expanded_wrt_weight_figure(
 
     fig, ax1 = plt.subplots()
 
-    # TODO: Plot the total distances with ax1. Use `ax1.plot(...)`.
-    # TODO: Make this curve colored blue with solid line style.
     # See documentation here:
     # https://matplotlib.org/2.0.0/api/_as_gen/matplotlib.axes.Axes.plot.html
     # You can also search google for additional examples.
@@ -43,9 +41,6 @@ def plot_distance_and_expanded_wrt_weight_figure(
     # Create another axis for the #expanded curve.
     ax2 = ax1.twinx()
 
-    # TODO: Plot the total expanded with ax2. Use `ax2.plot(...)`.
-    # TODO: ax2: Make the y-axis label, ticks and tick labels match the line color.
-    # TODO: Make this curve colored red with solid line style.
     plt.plot(weights, total_expanded, 'r')
     #ax2.plot(weights, total_expanded)
 
@@ -176,10 +171,59 @@ def relaxed_deliveries_problem():
     #    greedy are not dependent with the iteration number, so
     #    these two should be represented by horizontal lines.
 
+    run_times = 100
+    greedy_stoch_costs_arr = []
+
     greedy_stoch_solver = GreedyStochastic(MSTAirDistHeuristic)
     greedy_stoch_res = greedy_stoch_solver.solve_problem(big_deliveries_prob)
-    print(greedy_stoch_res)
-    exit()  # TODO: remove!
+    min_greedy_cost = greedy_stoch_res.final_search_node.cost
+    greedy_stoch_costs_arr.append(min_greedy_cost)
+    best_greedy_sol = greedy_stoch_res
+
+    greedy_stoch_anytime_costs = []
+    greedy_stoch_anytime_costs.append(min_greedy_cost)
+
+    for i in range(run_times - 1):
+        greedy_stoch_res = greedy_stoch_solver.solve_problem(big_deliveries_prob)
+        cost = greedy_stoch_res.final_search_node.cost
+        greedy_stoch_costs_arr.append(cost)
+
+        if cost < min_greedy_cost:
+            min_greedy_cost = cost
+            best_greedy_sol = greedy_stoch_res
+
+        greedy_stoch_anytime_costs.append(min_greedy_cost)
+
+
+    astar_solver = AStar(MSTAirDistHeuristic,heuristic_weight=0.5)
+    greedy_deter_solver = AStar(MSTAirDistHeuristic,heuristic_weight=1)
+
+    astar_cost = astar_solver.solve_problem(big_deliveries_prob).final_search_node.cost
+    greedy_deter_cost = greedy_deter_solver.solve_problem(big_deliveries_prob).final_search_node.cost
+
+    astar_cost_arr = [astar_cost]*run_times
+    greedy_deter_cost_arr = [greedy_deter_cost] * run_times
+
+    # Plot cost per iteration
+    fig, ax1 = plt.subplots()
+
+    x_axis = list(range(1, run_times + 1))
+    plt.plot(x_axis, greedy_stoch_costs_arr, label="Greedy stochastic")
+    plt.plot(x_axis, greedy_stoch_anytime_costs, label="Anytime algorithm")
+    plt.plot(x_axis, astar_cost_arr, label="Astar")
+    plt.plot(x_axis, greedy_deter_cost_arr, label="Greedy deterministic")
+
+    ax1.set_ylabel('cost', color='b')
+    ax1.tick_params('y', colors='b')
+    ax1.set_xlabel('Iteration')
+
+    plt.title("Costs as a function of iteration")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+
+
 
 
 def strict_deliveries_problem():
