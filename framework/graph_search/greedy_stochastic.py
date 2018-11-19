@@ -69,22 +69,21 @@ class GreedyStochastic(BestFirstSearch):
         nodes_vals = []
         for i in range(num_nodes_to_expand):
             node = self.open.pop_next_node()
-            nodes_to_expand.append(node)
             node_val = self._calc_node_expanding_priority(node)
             if node_val < 0.001:
-                node_val = 1.0
+                #  A node with a near-zero heuristic value was found - return it
+                return node
             ### Check our conditions in this function, and understand what to chang if node_val == 0
+            nodes_to_expand.append(node)
             nodes_vals.append(node_val)
 
         nodes_vals = np.array(nodes_vals)
-        #nodes_vals = np.array(list(map(lambda x: self._calc_node_expanding_priority(x), nodes_to_expand)))
+        ### Remove this line:
+        ### nodes_vals = np.array(list(map(lambda x: self._calc_node_expanding_priority(x), nodes_to_expand)))
 
         min_val = np.amin(np.array(nodes_vals))
         ### Should we even consider this case, or just return the node ?
-        #if min_val < 0.0001:
-           # min_val = 1.0
 
-        print(min_val)
         # Probabilities array
         prob_arr = np.zeros(len(nodes_to_expand))
 
@@ -92,21 +91,20 @@ class GreedyStochastic(BestFirstSearch):
         squared = np.array(list(map(lambda x: (x / min_val) ** exp, nodes_vals)))
         squared_sum = np.sum(squared)
 
-       # if squared_sum < 0.0001:
-            #squared_sum = len(nodes_to_expand)
-
         for i in range(len(nodes_to_expand)):
-            print(min_val)
             top = (float(nodes_vals[i]) / float(min_val)) ** exp
             prob_arr[i] = (float(top) / squared_sum)
 
         chosen_node = np.random.choice(nodes_to_expand,size=1,p=prob_arr)[0]
 
-        #Push other nodes back to Open
+        #Push other nodes back to OPEN
+        returned_nodes_num = 0
         for node in nodes_to_expand:
             if node!=chosen_node:
                 self.open.push_node(node)
+                returned_nodes_num += 1
 
+        assert(returned_nodes_num == num_nodes_to_expand-1) ### Remove this line after debugging
         # Update T
         self.T = self.T * self.T_scale_factor
         return chosen_node
