@@ -170,7 +170,7 @@ def relaxed_deliveries_problem():
     #    (x-axis). Of course that the costs of A*, and deterministic
     #    greedy are not dependent with the iteration number, so
     #    these two should be represented by horizontal lines.
-
+    ''' ### Uncomment this entire section!
     run_times = 100
     greedy_stoch_costs_arr = []
 
@@ -221,7 +221,7 @@ def relaxed_deliveries_problem():
     plt.legend()
     plt.grid()
     plt.show()
-
+    '''
 
 
 
@@ -237,7 +237,7 @@ def strict_deliveries_problem():
     # Ex.26
     # TODO: Call here the function `run_astar_for_weights_in_range()`
     #       with `MSTAirDistHeuristic` and `big_deliveries_prob`.
-    exit()  # TODO: remove!
+    run_astar_for_weights_in_range(MSTAirDistHeuristic, small_deliveries_strict_problem)
 
     # Ex.28
     # TODO: create an instance of `AStar` with the `RelaxedDeliveriesHeuristic`,

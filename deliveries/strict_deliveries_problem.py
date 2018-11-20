@@ -68,13 +68,84 @@ class StrictDeliveriesProblem(RelaxedDeliveriesProblem):
         """
         assert isinstance(state_to_expand, StrictDeliveriesState)
 
-        raise NotImplemented()  # TODO: remove!
+        expanded_state_junction = state_to_expand.current_location
+
+        # Explore all possible operators
+        for successor_state_junction in self.possible_stop_points:
+            if successor_state_junction == expanded_state_junction:
+                # Don't expand your current location
+                continue
+
+            if successor_state_junction in state_to_expand.dropped_so_far:
+                # By definition, operators are not defined to drop points we already visited
+                continue
+
+            # Look for estimated cost in cache:
+            cache_key = ((expanded_state_junction.index, successor_state_junction.index))
+            cache_value = self._get_from_cache(cache_key)
+            if cache_value is not None:
+                # wanted cost is already in cache
+                cost = cache_value
+
+            else:
+                # Estimate cost using inner_solver on MapProblem
+                inner_problem = MapProblem(self.roads,
+                                       expanded_state_junction.index,
+                                       successor_state_junction.index)
+                inner_problem_sol = self.inner_problem_solver.solve_problem(inner_problem)
+                cost = inner_problem_sol.final_search_node.cost
+
+                self._insert_to_cache(cache_key, cost)
+
+            if state_to_expand.fuel < cost:
+                continue
+
+            # Check the kind of state
+            if successor_state_junction in self.drop_points:
+                successor_state_fuel = state_to_expand.fuel - cost
+                successor_state_dropped_points = state_to_expand.dropped_so_far.union(
+                    set([successor_state_junction]))
+
+            else:
+                # Junction is a gas station
+                successor_state_fuel = self.gas_tank_capacity
+                successor_state_dropped_points = state_to_expand.dropped_so_far
+
+            successor_state = StrictDeliveriesState(successor_state_junction,
+                                                        successor_state_dropped_points,
+                                                        successor_state_fuel)
+            yield successor_state, cost
+
+
+
+
+
+        '''
+            cost = link.distance ### Probably wrong! remove this line
+            successor_state_fuel = state_to_expand.fuel - cost
+
+            if successor_state_fuel < 0.0:
+                # not enough fuel to reach the next junction - move to next
+                continue
+
+            if expanded_state_junction in self.drop_points:
+                # Add successor to the set of drop junctions we've already visited
+                successor_dropped_already = state_to_expand.dropped_so_far.union(set([expanded_state_junction]))
+
+            if expanded_state_junction in self.gas_stations:
+                # Fill gas tank
+                successor_state_fuel = self.gas_tank_capacity
+
+            successor_state = StrictDeliveriesState(successor_state_junction,
+                                                    successor_dropped_already,
+                                                    successor_state_fuel)
+            yield successor_state, cost
+        '''
 
     def is_goal(self, state: GraphProblemState) -> bool:
         """
         This method receives a state and returns whether this state is a goal.
-        TODO: implement this method!
+        A state goal is where
         """
         assert isinstance(state, StrictDeliveriesState)
-
-        raise NotImplemented()  # TODO: remove!
+        return state.dropped_so_far == self.drop_points

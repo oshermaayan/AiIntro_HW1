@@ -68,8 +68,6 @@ class AStar(BestFirstSearch):
         Remember: In A*, in contrast to uniform-cost, a successor state might have an already closed node,
                   but still could be improved.
         """
-        #if self.close.has_state(successor_node.state):
-        #    return
 
         if self.open.has_state(successor_node.state):
             already_found_node_with_same_state = self.open.get_node_by_state(successor_node.state)

@@ -98,6 +98,10 @@ class RelaxedDeliveriesProblem(GraphProblem):
                 # Don't expand your current location
                 continue
 
+            if successor_state_junction in state_to_expand.dropped_so_far:
+                # By definition, operators are not defined to drop points we already visited
+                continue
+
             distance = state_to_expand.current_location.calc_air_distance_from(successor_state_junction)
             successor_state_fuel = state_to_expand.fuel - distance
 
@@ -117,7 +121,6 @@ class RelaxedDeliveriesProblem(GraphProblem):
             successor_state = RelaxedDeliveriesState(successor_state_junction, successor_state_dropped_points,
                                                     successor_state_fuel)
             yield successor_state, distance
-            ### Verify that we do/don't need to return a cost, e.g. successor_state, distance
 
 
     def is_goal(self, state: GraphProblemState) -> bool:
