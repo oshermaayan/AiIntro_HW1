@@ -237,7 +237,7 @@ def strict_deliveries_problem():
     # Ex.26
     # TODO: Call here the function `run_astar_for_weights_in_range()`
     #       with `MSTAirDistHeuristic` and `big_deliveries_prob`.
-    ###run_astar_for_weights_in_range(MSTAirDistHeuristic, small_deliveries_strict_problem)
+    run_astar_for_weights_in_range(MSTAirDistHeuristic, small_deliveries_strict_problem)
 
     # Ex.28
     # TODO: create an instance of `AStar` with the `RelaxedDeliveriesHeuristic`,
@@ -245,10 +245,6 @@ def strict_deliveries_problem():
     astar_relaxed_heur_solver = AStar(RelaxedDeliveriesHeuristic)
     astar_relaxed_heur_solution = astar_relaxed_heur_solver.solve_problem(small_deliveries_strict_problem)
     print(astar_relaxed_heur_solution)
-
-    uc = UniformCost()
-    uc_solution = uc.solve_problem(small_deliveries_strict_problem)
-    print (uc_solution)
 
 def main():
     map_problem()
