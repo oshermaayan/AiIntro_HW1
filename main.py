@@ -85,8 +85,8 @@ def map_problem():
     # Ex.8
     map_prob = MapProblem(roads, 54, 549)
     uc = UniformCost()
-    #res = uc.solve_problem(map_prob)
-    #print(res)
+    res = uc.solve_problem(map_prob)
+    print(res)
 
     # Ex.10
     # TODO: create an instance of `AStar` with the `NullHeuristic`,
@@ -94,15 +94,15 @@ def map_problem():
     # Notice: AStar constructor receives the heuristic *type* (ex: `MyHeuristicClass`),
     #         and not an instance of the heuristic (eg: not `MyHeuristicClass()`).
     astar_solver_nullHeur = AStar(NullHeuristic, heuristic_weight=0)
-    #astar_weightzero_res = astar_solver_nullHeur.solve_problem(map_prob)
-   #print(astar_weightzero_res)
+    astar_weightzero_res = astar_solver_nullHeur.solve_problem(map_prob)
+    print(astar_weightzero_res)
 
     # Ex.11
     # TODO: create an instance of `AStar` with the `AirDistHeuristic`,
     #       solve the same `map_prob` with it and print the results (as before).
     astar_solver_airDistHeur = AStar(AirDistHeuristic)
-    #astar_AirDist_res = astar_solver_airDistHeur.solve_problem(map_prob)
-    #print(astar_AirDist_res)
+    astar_AirDist_res = astar_solver_airDistHeur.solve_problem(map_prob)
+    print(astar_AirDist_res)
 
     # Ex.12
     # TODO:
@@ -113,7 +113,7 @@ def map_problem():
     #    (upper in this file).
     # 3. Call here the function `run_astar_for_weights_in_range()`
     #    with `AirDistHeuristic` and `map_prob`.
-    ###run_astar_for_weights_in_range(AirDistHeuristic, map_prob)
+    run_astar_for_weights_in_range(AirDistHeuristic, map_prob)
 
 
 # --------------------------------------------------------------------
@@ -132,15 +132,15 @@ def relaxed_deliveries_problem():
     # Ex.16
     #       solve the `big_deliveries_prob` with it and print the results (as before).
     astar_solver_maxAirDistHeur = AStar(MaxAirDistHeuristic)
-    ###astar_maxAirDist_res = astar_solver_maxAirDistHeur.solve_problem(big_deliveries_prob)
-    ###print(astar_maxAirDist_res)
+    astar_maxAirDist_res = astar_solver_maxAirDistHeur.solve_problem(big_deliveries_prob)
+    print(astar_maxAirDist_res)
 
     # Ex.17
     # TODO: create an instance of `AStar` with the `MSTAirDistHeuristic`,
     #       solve the `big_deliveries_prob` with it and print the results (as before).
     astar_relaxed_MST_solver = AStar(MSTAirDistHeuristic)
-    ###astar_relaxed_MST_res = astar_relaxed_MST_solver.solve_problem(big_deliveries_prob)
-    ###print(astar_relaxed_MST_res)
+    astar_relaxed_MST_res = astar_relaxed_MST_solver.solve_problem(big_deliveries_prob)
+    print(astar_relaxed_MST_res)
 
 
 
@@ -148,7 +148,7 @@ def relaxed_deliveries_problem():
     # TODO: Call here the function `run_astar_for_weights_in_range()`
     #       with `MSTAirDistHeuristic` and `big_deliveries_prob`.
 
-    ###run_astar_for_weights_in_range(MSTAirDistHeuristic, big_deliveries_prob)
+    run_astar_for_weights_in_range(MSTAirDistHeuristic, big_deliveries_prob)
 
     # Ex.24
     # TODO:
@@ -170,7 +170,7 @@ def relaxed_deliveries_problem():
     #    (x-axis). Of course that the costs of A*, and deterministic
     #    greedy are not dependent with the iteration number, so
     #    these two should be represented by horizontal lines.
-    ''' ### Uncomment this entire section!
+
     run_times = 100
     greedy_stoch_costs_arr = []
 
@@ -221,9 +221,6 @@ def relaxed_deliveries_problem():
     plt.legend()
     plt.grid()
     plt.show()
-    '''
-
-
 
 
 def strict_deliveries_problem():
