@@ -38,8 +38,9 @@ class RelaxedDeliveriesState(GraphProblemState):
         Notice: Never compare floats using `==` operator! Use `fuel_as_int` instead of `fuel`.
         """
         assert isinstance(other, RelaxedDeliveriesState)
-        location_equal = self.current_location.__eq__(other.current_location)
-        drop_off_equal = (self.dropped_so_far.intersection(other.dropped_so_far) == self.dropped_so_far)
+        location_equal = (self.current_location == other.current_location)
+        drop_off_equal = (self.dropped_so_far == other.dropped_so_far)
+            ### Remove this line before submission(self.dropped_so_far.intersection(other.dropped_so_far) == self.dropped_so_far)
         fuel_equal = self.fuel_as_int == other.fuel_as_int
         return location_equal and drop_off_equal and fuel_equal
 
