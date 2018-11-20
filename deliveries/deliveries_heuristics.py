@@ -106,7 +106,7 @@ class RelaxedDeliveriesHeuristic(HeuristicFunction):
         if estimated_cost is None:
             # There is no solution from current state to a goal state
             ###This code "smells"
-            return float("inf")
+            return np.inf #float("inf")
 
         else:
             return astar_solution.final_search_node.cost
