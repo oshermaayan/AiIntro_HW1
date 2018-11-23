@@ -40,7 +40,6 @@ class RelaxedDeliveriesState(GraphProblemState):
         assert isinstance(other, RelaxedDeliveriesState)
         location_equal = (self.current_location == other.current_location)
         drop_off_equal = (self.dropped_so_far == other.dropped_so_far)
-            ### Remove this line before submission(self.dropped_so_far.intersection(other.dropped_so_far) == self.dropped_so_far)
         fuel_equal = self.fuel_as_int == other.fuel_as_int
         return location_equal and drop_off_equal and fuel_equal
 
@@ -130,7 +129,6 @@ class RelaxedDeliveriesProblem(GraphProblem):
         """
         assert isinstance(state, RelaxedDeliveriesState)
         # Have all the ordered been delivered?
-        ###print("Delivered: " +str(len(state.dropped_so_far)))
         return state.dropped_so_far == self.drop_points
 
     def solution_additional_str(self, result: 'SearchResult') -> str:

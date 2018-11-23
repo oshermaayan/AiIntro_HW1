@@ -125,7 +125,6 @@ def relaxed_deliveries_problem():
     print()
     print('Solve the relaxed deliveries problem.')
 
-    ### CHANGE BACK TO BIG_DELIVERY.IN
     big_delivery = DeliveriesProblemInput.load_from_file('big_delivery.in', roads)#DeliveriesProblemInput.load_from_file('big_delivery.in', roads)
     big_deliveries_prob = RelaxedDeliveriesProblem(big_delivery)
 

@@ -82,6 +82,6 @@ class AStar(BestFirstSearch):
                 self.open.push_node(successor_node)  # Add new node with better cost to OPEN
 
         else: #state hasn't been developed yet - add it to OPEN
-            #TODO remove this line  ####(not self.open.has_state(successor_node.state) and not not self.open.has_state(successor_node.state))
+            #TODO remove this line
             self.open.push_node(successor_node)
 

@@ -73,16 +73,12 @@ class GreedyStochastic(BestFirstSearch):
             if node_val < 0.001:
                 #  A node with a near-zero heuristic value was found - return it
                 return node
-            ### Check our conditions in this function, and understand what to chang if node_val == 0
             nodes_to_expand.append(node)
             nodes_vals.append(node_val)
 
         nodes_vals = np.array(nodes_vals)
-        ### Remove this line:
-        ### nodes_vals = np.array(list(map(lambda x: self._calc_node_expanding_priority(x), nodes_to_expand)))
 
         min_val = np.amin(np.array(nodes_vals))
-        ### Should we even consider this case, or just return the node ?
 
         # Probabilities array
         prob_arr = np.zeros(len(nodes_to_expand))
@@ -104,7 +100,6 @@ class GreedyStochastic(BestFirstSearch):
                 self.open.push_node(node)
                 returned_nodes_num += 1
 
-        assert(returned_nodes_num == num_nodes_to_expand-1) ### Remove this line after debugging
         # Update T
         self.T = self.T * self.T_scale_factor
         return chosen_node

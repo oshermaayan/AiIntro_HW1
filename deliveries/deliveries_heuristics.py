@@ -105,7 +105,6 @@ class RelaxedDeliveriesHeuristic(HeuristicFunction):
 
         if estimated_cost is None:
             # There is no solution from current state to a goal state
-            ###This code "smells"
             return np.inf #float("inf")
 
         else:
